@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Solpon Pedometer</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Noto Sans JP',sans-serif;
+
+    min-height:100vh;
+
+    overflow:hidden;
+
+    color:white;
+
+    background:
+    radial-gradient(circle at top,#7d2cff 0%,transparent 40%),
+    radial-gradient(circle at bottom,#009dff 0%,transparent 45%),
+    linear-gradient(180deg,#5518d9,#006eff);
+}
+
+/* 発光 */
+
+.glow{
+    position:fixed;
+
+    width:500px;
+    height:500px;
+
+    border-radius:50%;
+
+    filter:blur(120px);
+
+    opacity:0.35;
+
+    animation:float 8s ease-in-out infinite;
+}
+
+.glow1{
+    background:#a855ff;
+    top:-200px;
+    left:-200px;
+}
+
+.glow2{
+    background:#00aaff;
+    bottom:-200px;
+    right:-200px;
+
+    animation-delay:4s;
+}
+
+@keyframes float{
+
+    0%{
+        transform:translateY(0px);
+    }
+
+    50%{
+        transform:translateY(30px);
+    }
+
+    100%{
+        transform:translateY(0px);
+    }
+
+}
+
+/* 全体 */
+
+.container{
+
+    position:relative;
+
+    z-index:10;
+
+    width:100%;
+
+    min-height:100vh;
+
+    padding:25px;
+
+    display:flex;
+    flex-direction:column;
+}
+
+/* 戻る */
+
+.back{
+
+    font-size:18px;
+
+    font-weight:700;
+
+    opacity:0.85;
+
+    margin-bottom:20px;
+
+    text-decoration:none;
+
+    color:white;
+}
+
+/* タイトル */
+
+.title{
+
+    text-align:center;
+
+    margin-top:10px;
+}
+
+.titleSmall{
+
+    font-size:20px;
+
+    opacity:0.8;
+
+    margin-bottom:10px;
+}
+
+.stepCount{
+
+    font-size:96px;
+
+    font-weight:900;
+
+    line-height:1;
+
+    text-shadow:
+    0 0 20px rgba(255,255,255,0.5),
+    0 0 50px rgba(0,170,255,0.45);
+
+    animation:pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.03);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+
+}
+
+.message{
+
+    margin-top:18px;
+
+    font-size:18px;
+
+    opacity:0.9;
+}
+
+/* ガラスカード */
+
+.stats{
+
+    margin-top:45px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:18px;
+}
+
+.card{
+
+    background:rgba(255,255,255,0.12);
+
+    border:
+    1px solid rgba(255,255,255,0.12);
+
+    backdrop-filter:blur(20px);
+
+    border-radius:28px;
+
+    padding:25px;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.25);
+}
+
+.cardLabel{
+
+    font-size:15px;
+
+    opacity:0.75;
+
+    margin-bottom:12px;
+}
+
+.cardValue{
+
+    font-size:34px;
+
+    font-weight:900;
+}
+
+/* ボタン */
+
+.controls{
+
+    margin-top:auto;
+
+    padding-top:50px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+}
+
+.btn{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:999px;
+
+    padding:20px;
+
+    font-size:18px;
+
+    font-weight:800;
+
+    color:white;
+
+    cursor:pointer;
+
+    transition:0.25s;
+
+    backdrop-filter:blur(20px);
+}
+
+.startBtn{
+
+    background:
+    linear-gradient(90deg,
+    rgba(0,180,255,0.8),
+    rgba(130,90,255,0.8));
+
+    box-shadow:
+    0 0 30px rgba(0,170,255,0.4);
+}
+
+.startBtn:hover{
+
+    transform:translateY(-3px);
+}
+
+.resetBtn{
+
+    background:
+    rgba(255,255,255,0.12);
+
+    border:
+    1px solid rgba(255,255,255,0.1);
+}
+
+/* 状態 */
+
+.status{
+
+    margin-top:15px;
+
+    text-align:center;
+
+    font-size:14px;
+
+    opacity:0.8;
+}
+
+/* フッター */
+
+.footer{
+
+    text-align:center;
+
+    margin-top:35px;
+
+    color:rgba(255,255,255,0.28);
+
+    font-size:13px;
+
+    letter-spacing:1px;
+
+    font-weight:700;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="glow glow1"></div>
+<div class="glow glow2"></div>
+
+<div class="container">
+
+    <a href="index.html" class="back">
+        ← ホームに戻る
+    </a>
+
+    <div class="title">
+
+        <div class="titleSmall">
+            今日の歩数
+        </div>
+
+        <div class="stepCount" id="stepCount">
+            0
+        </div>
+
+        <div class="message">
+            今日もいい感じ。
+        </div>
+
+    </div>
+
+    <div class="stats">
+
+        <div class="card">
+
+            <div class="cardLabel">
+                距離
+            </div>
+
+            <div class="cardValue" id="distance">
+                0.0km
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="cardLabel">
+                消費
+            </div>
+
+            <div class="cardValue" id="calories">
+                0kcal
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="controls">
+
+        <button class="btn startBtn" id="startBtn">
+            START
+        </button>
+
+        <button class="btn resetBtn" id="resetBtn">
+            RESET
+        </button>
+
+    </div>
+
+    <div class="status" id="status">
+        停止中
+    </div>
+
+    <div class="footer">
+        ©2026 Solpon
+    </div>
+
+</div>
+
+<script>
+
+let steps = 0;
+let running = false;
+
+const stepEl =
+document.getElementById("stepCount");
+
+const distanceEl =
+document.getElementById("distance");
+
+const caloriesEl =
+document.getElementById("calories");
+
+const statusEl =
+document.getElementById("status");
+
+const startBtn =
+document.getElementById("startBtn");
+
+/* 保存 */
+
+function saveData(){
+
+    localStorage.setItem(
+        "todaySteps",
+        steps
+    );
+
+}
+
+/* UI更新 */
+
+function updateUI(){
+
+    stepEl.textContent = steps;
+
+    const distance =
+    (steps * 0.0007).toFixed(2);
+
+    const calories =
+    Math.round(steps * 0.04);
+
+    distanceEl.textContent =
+    distance + "km";
+
+    caloriesEl.textContent =
+    calories + "kcal";
+
+}
+
+/* 歩数追加 */
+
+function addStep(){
+
+    steps++;
+
+    updateUI();
+
+    saveData();
+
+    if(navigator.vibrate){
+
+        navigator.vibrate(30);
+
+    }
+
+}
+
+
+
+let lastStepTime = 0;
+
+/* 急激な動きを無視 */
+
+let ignoreUntil = 0;
+
+/* モーション */
+
+function motion(e){
+
+    if(!running) return;
+
+    const ac =
+    e.accelerationIncludingGravity;
+
+    if(!ac) return;
+
+    /* 加速度 */
+
+    const x = ac.x || 0;
+    const y = ac.y || 0;
+    const z = ac.z || 0;
+
+    /* 現在時刻 */
+
+    const now = Date.now();
+
+    /* 急激な動き */
+
+    const totalMove =
+    Math.abs(x)
+    +
+    Math.abs(y)
+    +
+    Math.abs(z);
+
+    /*
+      ポケットから出す等
+      ↓
+      一時停止
+    */
+
+    if(totalMove > 45){
+
+        ignoreUntil = now + 1200;
+
+    }
+
+    /* 無効時間中 */
+
+    if(now < ignoreUntil){
+
+        return;
+
+    }
+
+    /* 歩行判定 */
+
+    const magnitude =
+    Math.sqrt(
+        x * x +
+        y * y +
+        z * z
+    );
+
+    /*
+      一定以上の動き
+      +
+      一定時間空ける
+    */
+
+    if(
+        magnitude > 14.5 &&
+        now - lastStepTime > 350
+    ){
+
+        lastStepTime = now;
+
+        addStep();
+
+    }
+
+}
+/* 開始 */
+
+async function start(){
+
+    if(running){
+
+        running = false;
+
+        statusEl.textContent =
+        "停止中";
+
+        startBtn.textContent =
+        "START";
+
+        return;
+    }
+
+    if(
+        typeof DeviceMotionEvent
+        !== "undefined"
+        &&
+        typeof DeviceMotionEvent
+        .requestPermission
+        === "function"
+    ){
+
+        const permission =
+        await DeviceMotionEvent
+        .requestPermission();
+
+        if(permission !== "granted"){
+
+            alert("許可が必要です");
+
+            return;
+        }
+
+    }
+
+    running = true;
+
+    statusEl.textContent =
+    "計測中...";
+
+    startBtn.textContent =
+    "STOP";
+
+}
+
+/* リセット */
+
+function reset(){
+
+    steps = 0;
+
+    updateUI();
+
+    saveData();
+
+}
+
+/* 起動時 */
+
+steps =
+Number(
+localStorage.getItem("todaySteps")
+) || 0;
+
+updateUI();
+
+window.addEventListener(
+    "devicemotion",
+    motion
+);
+
+startBtn.addEventListener(
+    "click",
+    start
+);
+
+document
+.getElementById("resetBtn")
+.addEventListener(
+    "click",
+    reset
+);
+
+</script>
+
+</body>
+</html>
