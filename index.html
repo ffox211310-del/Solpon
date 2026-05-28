@@ -19,7 +19,8 @@
 
 body{
     font-family:'Noto Sans JP',sans-serif;
-    overflow:hidden;
+    overflow-x:hidden;
+    overflow-y:auto;
     background:black;
 }
 
@@ -317,7 +318,20 @@ body{
 
 /* アイコン */
 
+.apps{
+    display:grid;
+
+    grid-template-columns:
+    repeat(3,1fr);
+
+    gap:20px;
+
+    padding-bottom:40px;
+}
+
 .app{
+
+    width:100%;
     aspect-ratio:1;
 
     border-radius:50%;
@@ -336,7 +350,8 @@ body{
     justify-content:center;
     align-items:center;
 
-    font-size:54px;
+    /* ここ変更 */
+    font-size:38px;
 
     box-shadow:
     0 10px 30px rgba(0,0,0,0.35),
