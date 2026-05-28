@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>HealthHub</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Noto Sans JP',sans-serif;
+    min-height:100vh;
+    background:
+    radial-gradient(circle at top left,#5b7fff,transparent 35%),
+    radial-gradient(circle at bottom right,#8d5bff,transparent 35%),
+    linear-gradient(135deg,#0f172a,#1e293b);
+
+    color:white;
+    overflow-x:hidden;
+}
+
+/* 背景アニメーション */
+
+.bgGlow{
+    position:fixed;
+    width:500px;
+    height:500px;
+    border-radius:50%;
+    filter:blur(120px);
+    opacity:0.25;
+    animation:float 8s ease-in-out infinite;
+    z-index:0;
+}
+
+.glow1{
+    background:#5b7fff;
+    top:-200px;
+    left:-150px;
+}
+
+.glow2{
+    background:#8d5bff;
+    bottom:-200px;
+    right:-150px;
+    animation-delay:4s;
+}
+
+@keyframes float{
+    0%{transform:translateY(0px);}
+    50%{transform:translateY(30px);}
+    100%{transform:translateY(0px);}
+}
+
+.container{
+    position:relative;
+    z-index:1;
+    padding:30px 20px 60px;
+    max-width:900px;
+    margin:auto;
+}
+
+.hero{
+    margin-top:40px;
+    margin-bottom:40px;
+}
+
+.hero h1{
+    font-size:52px;
+    font-weight:900;
+    line-height:1;
+    margin-bottom:15px;
+
+    animation:fadeUp 1s ease;
+}
+
+.hero p{
+    color:#cbd5e1;
+    font-size:18px;
+
+    animation:fadeUp 1.3s ease;
+}
+
+@keyframes fadeUp{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* カード */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+}
+
+.card{
+    position:relative;
+
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.1);
+
+    backdrop-filter:blur(20px);
+
+    border-radius:28px;
+
+    padding:28px;
+
+    overflow:hidden;
+
+    transition:0.3s;
+
+    cursor:pointer;
+
+    text-decoration:none;
+    color:white;
+}
+
+.card:hover{
+    transform:translateY(-8px) scale(1.02);
+
+    background:rgba(255,255,255,0.12);
+}
+
+.card::before{
+    content:"";
+
+    position:absolute;
+
+    width:180px;
+    height:180px;
+
+    background:rgba(255,255,255,0.08);
+
+    border-radius:50%;
+
+    top:-60px;
+    right:-60px;
+}
+
+.icon{
+    font-size:46px;
+    margin-bottom:20px;
+}
+
+.card h2{
+    font-size:28px;
+    margin-bottom:10px;
+    font-weight:800;
+}
+
+.card p{
+    color:#d1d5db;
+    line-height:1.6;
+}
+
+/* Coming Soon */
+
+.coming{
+    opacity:0.7;
+}
+
+/* フッター */
+
+.footer{
+    margin-top:50px;
+    text-align:center;
+    color:#94a3b8;
+    font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="bgGlow glow1"></div>
+<div class="bgGlow glow2"></div>
+
+<div class="container">
+
+    <section class="hero">
+        <h1>
+            Health<br>
+            Hub
+        </h1>
+
+        <p>
+            あなたの健康を、もっとスマートに。
+        </p>
+    </section>
+
+    <section class="grid">
+
+        <!-- 歩数計 -->
+
+        <a class="card" href="pedometer.html">
+
+            <div class="icon">🚶</div>
+
+            <h2>歩数計</h2>
+
+            <p>
+                スマホのモーションセンサーを利用して
+                リアルタイムで歩数を計測します。
+            </p>
+
+        </a>
+
+        <!-- 睡眠 -->
+
+        <div class="card coming">
+
+            <div class="icon">🌙</div>
+
+            <h2>睡眠管理</h2>
+
+            <p>
+                睡眠時間や生活リズムを分析。
+                Coming Soon...
+            </p>
+
+        </div>
+
+        <!-- 水分 -->
+
+        <div class="card coming">
+
+            <div class="icon">💧</div>
+
+            <h2>水分補給</h2>
+
+            <p>
+                水分摂取量を記録して
+                健康をサポート。
+            </p>
+
+        </div>
+
+        <!-- 心拍 -->
+
+        <div class="card coming">
+
+            <div class="icon">❤️</div>
+
+            <h2>心拍管理</h2>
+
+            <p>
+                カメラやセンサーを利用した
+                心拍チェック機能。
+            </p>
+
+        </div>
+
+    </section>
+
+    <div class="footer">
+        © 2026 HealthHub
+    </div>
+
+</div>
+
+</body>
+</html>
