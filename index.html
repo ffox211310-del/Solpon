@@ -628,6 +628,54 @@ width:100%;
 </div>
     
 </div>
+<script>
 
+/*
+  一度表示したか
+*/
+
+const alreadyVisited =
+sessionStorage.getItem(
+    "solponSplash"
+);
+
+/* 初回じゃない */
+
+if(alreadyVisited){
+
+    /*
+      スプラッシュ削除
+    */
+
+    document
+    .querySelector(".splash")
+    .style.display = "none";
+
+    /*
+      ホーム即表示
+    */
+
+    document
+    .querySelector(".home")
+    .style.opacity = "1";
+
+    document
+    .querySelector(".home")
+    .style.animation = "none";
+
+}
+
+/* 初回 */
+
+else{
+
+    sessionStorage.setItem(
+        "solponSplash",
+        "true"
+    );
+
+}
+
+</script>
 </body>
 </html>
