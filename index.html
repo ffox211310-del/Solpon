@@ -320,11 +320,7 @@ body{
 
     text-decoration:none;
 
-    color:white;
-
-    display:flex;
-
-    justify-content:center;
+    color:inherit;
 }
 
 .appWrap{
@@ -546,12 +542,24 @@ width:100%;
         アプリケーション
     </div>
 
-  <div
-class="app"
-onclick="location.href='pedometer.html'"
+<a
+href="pedometer.html"
+class="appLink"
 >
-    🚶
-  </div>
+
+    <div class="appWrap">
+
+        <div class="app">
+            🏃
+        </div>
+
+        <div class="appName">
+            歩数計
+        </div>
+
+    </div>
+
+</a>
 
         <div class="app">❤️</div>
 
