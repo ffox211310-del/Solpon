@@ -505,12 +505,14 @@ width:100%;
 </div>
 
 <!-- ホーム -->
-<div class="batteryNotice">
+<div class="home">
+
+    <div class="batteryNotice">
 
     Androidでは、
     バッテリー最適化をOFFにすると
     計測が安定する場合があります
-
+    </div>
 </div>
 <div class="home">
 
@@ -730,7 +732,7 @@ if(isStandalone){
 */
 
 const alreadyVisited =
-localStorage.getItem(
+sessionStorage.getItem(
     "solponSplash"
 );
 /* 初回じゃない */
@@ -767,7 +769,7 @@ skipSplash
 
 else{
 
-    localStorage.setItem(
+    sessionStorage.setItem(
     "solponSplash",
     "true"
 );
