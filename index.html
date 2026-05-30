@@ -631,7 +631,19 @@ width:100%;
     
 </div>
 <script>
+    /*アプリ扱いさせる*/
+const isStandalone =
+window.matchMedia(
+"(display-mode: standalone)"
+).matches;
 
+if(isStandalone){
+
+    console.log(
+        "PWA起動中"
+    );
+
+    }
 /*
   一度表示したか
 */
