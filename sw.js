@@ -1,4 +1,4 @@
-const CACHE_NAME = "solpon-v1";
+const CACHE_NAME = "solpon-v2";
 
 const urlsToCache = [
   "./",
@@ -8,14 +8,48 @@ const urlsToCache = [
 
 self.addEventListener("install", e => {
 
+  self.skipWaiting();
+
   e.waitUntil(
 
     caches.open(CACHE_NAME)
     .then(cache => {
-      return cache.addAll(urlsToCache);
+
+      return cache.addAll(
+        urlsToCache
+      );
+
     })
 
   );
+
+});
+
+self.addEventListener("activate", e => {
+
+  e.waitUntil(
+
+    caches.keys().then(keys => {
+
+      return Promise.all(
+
+        keys.map(key => {
+
+          if(key !== CACHE_NAME){
+
+            return caches.delete(key);
+
+          }
+
+        })
+
+      );
+
+    })
+
+  );
+
+  self.clients.claim();
 
 });
 
@@ -25,7 +59,10 @@ self.addEventListener("fetch", e => {
 
     caches.match(e.request)
     .then(response => {
-      return response || fetch(e.request);
+
+      return response ||
+      fetch(e.request);
+
     })
 
   );
