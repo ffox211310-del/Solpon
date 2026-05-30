@@ -679,13 +679,17 @@ document
 ()=>{
 
     const transition =
-    document.getElementById(
-        "transition"
-    );
+document.getElementById(
+    "transition"
+);
+
+if(transition){
 
     transition.classList.add(
         "active"
     );
+
+        }
 
     setTimeout(()=>{
 
