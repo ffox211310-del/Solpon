@@ -335,9 +335,9 @@ body{
 
 <div class="container">
 
-    <a href="index.html" class="back">
+    <div class="back" id="backBtn">
         ← ホームに戻る
-    </a>
+    </div>
 
     <div class="title">
 
@@ -648,7 +648,29 @@ document
     reset
 );
 
-    
+    document
+.getElementById("backBtn")
+.addEventListener(
+"click",
+()=>{
+
+    const transition =
+    document.getElementById(
+        "transition"
+    );
+
+    transition.classList.add(
+        "active"
+    );
+
+    setTimeout(()=>{
+
+        window.location.href =
+        "index.html?skipSplash=true";
+
+    },500);
+
+});
 </script>
 </body>
 </html>
