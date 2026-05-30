@@ -658,6 +658,47 @@ width:100%;
     
 </div>
 <script>
+    /*無音再生*/
+    let silentAudio = null;
+    async function startSilentAudio(){
+
+    try{
+
+        silentAudio =
+        new Audio("silent.mp3");
+
+        silentAudio.loop = true;
+
+        silentAudio.volume = 0.001;
+
+        await silentAudio.play();
+
+        console.log(
+            "silent audio started"
+        );
+
+    }catch(err){
+
+        console.log(err);
+
+    }
+
+    }
+    
+    function stopSilentAudio(){
+
+    if(silentAudio){
+
+        silentAudio.pause();
+
+        silentAudio = null;
+
+    }
+
+    }
+    /*Start時とStop時のなんか*/
+    await startSilentAudio();
+    stopSilentAudio();
     /*アプリ扱いさせる*/
 const isStandalone =
 window.matchMedia(
