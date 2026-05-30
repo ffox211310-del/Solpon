@@ -681,6 +681,14 @@ width:100%;
     
 </div>
 <script>
+    /*ホームに戻る修正*/
+    const params =
+new URLSearchParams(
+window.location.search
+);
+
+const skipSplash =
+params.get("skipSplash");
     /*無音再生*/
     let silentAudio = null;
     async function startSilentAudio(){
@@ -751,7 +759,11 @@ localStorage.getItem(
 );
 /* 初回じゃない */
 
-if(alreadyVisited){
+if(
+alreadyVisited
+||
+skipSplash
+){
 
     /*
       スプラッシュ削除
