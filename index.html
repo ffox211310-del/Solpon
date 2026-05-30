@@ -723,10 +723,9 @@ if(isStandalone){
 */
 
 const alreadyVisited =
-sessionStorage.getItem(
+localStorage.getItem(
     "solponSplash"
 );
-
 /* 初回じゃない */
 
 if(alreadyVisited){
@@ -757,10 +756,10 @@ if(alreadyVisited){
 
 else{
 
-    sessionStorage.setItem(
-        "solponSplash",
-        "true"
-    );
+    localStorage.setItem(
+    "solponSplash",
+    "true"
+);
 
 }
 
