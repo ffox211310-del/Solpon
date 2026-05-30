@@ -366,7 +366,7 @@ body{
     <div class="title">
 
         <div class="titleSmall">
-            今日の歩数
+            今日の移動
         </div>
 
         <div class="stepCount" id="stepCount">
@@ -433,8 +433,15 @@ body{
 
 <script>
 
-let steps = 0;
-let running = false;
+let tracking = false;
+
+let totalDistance = 0;
+
+let lastPosition = null;
+
+let watchId = null;
+
+/* 要素 */
 
 const stepEl =
 document.getElementById("stepCount");
@@ -456,8 +463,8 @@ document.getElementById("startBtn");
 function saveData(){
 
     localStorage.setItem(
-        "todaySteps",
-        steps
+        "totalDistance",
+        totalDistance
     );
 
 }
@@ -466,171 +473,218 @@ function saveData(){
 
 function updateUI(){
 
-    stepEl.textContent = steps;
-
-    const distance =
-    (steps * 0.0007).toFixed(2);
-
-    const calories =
-    Math.round(steps * 0.04);
+    /*
+      距離(km)
+    */
 
     distanceEl.textContent =
-    distance + "km";
+    totalDistance.toFixed(2)
+    + "km";
+
+    /*
+      歩数推定
+      1歩 = 0.7m
+    */
+
+    const estimatedSteps =
+    Math.round(
+        (totalDistance * 1000)
+        / 0.7
+    );
+
+    stepEl.textContent =
+    estimatedSteps;
+
+    /*
+      消費カロリー
+      超ざっくり
+    */
+
+    const calories =
+    Math.round(
+        totalDistance * 55
+    );
 
     caloriesEl.textContent =
     calories + "kcal";
 
 }
 
-/* 歩数追加 */
+/* 距離計算 */
 
-function addStep(){
+function calculateDistance(
+    lat1,
+    lon1,
+    lat2,
+    lon2
+){
 
-    steps++;
+    const R = 6371;
 
-    updateUI();
+    const dLat =
+    (lat2 - lat1)
+    * Math.PI / 180;
 
-    saveData();
+    const dLon =
+    (lon2 - lon1)
+    * Math.PI / 180;
 
-    if(navigator.vibrate){
-
-        navigator.vibrate(30);
-
-    }
-
-}
-
-
-
-let lastStepTime = 0;
-
-/* 急激な動きを無視 */
-
-let ignoreUntil = 0;
-
-/* モーション */
-
-function motion(e){
-
-    if(!running) return;
-
-    const ac =
-    e.accelerationIncludingGravity;
-
-    if(!ac) return;
-
-    /* 加速度 */
-
-    const x = ac.x || 0;
-    const y = ac.y || 0;
-    const z = ac.z || 0;
-
-    /* 現在時刻 */
-
-    const now = Date.now();
-
-    /* 急激な動き */
-
-    const totalMove =
-    Math.abs(x)
+    const a =
+    Math.sin(dLat / 2)
+    *
+    Math.sin(dLat / 2)
     +
-    Math.abs(y)
-    +
-    Math.abs(z);
+    Math.cos(lat1 * Math.PI / 180)
+    *
+    Math.cos(lat2 * Math.PI / 180)
+    *
+    Math.sin(dLon / 2)
+    *
+    Math.sin(dLon / 2);
 
-    /*
-      ポケットから出す等
-      ↓
-      一時停止
-    */
-
-    if(totalMove > 45){
-
-        ignoreUntil = now + 1200;
-
-    }
-
-    /* 無効時間中 */
-
-    if(now < ignoreUntil){
-
-        return;
-
-    }
-
-    /* 歩行判定 */
-
-    const magnitude =
-    Math.sqrt(
-        x * x +
-        y * y +
-        z * z
+    const c =
+    2 *
+    Math.atan2(
+        Math.sqrt(a),
+        Math.sqrt(1 - a)
     );
 
-    /*
-      一定以上の動き
-      +
-      一定時間空ける
-    */
-
-    if(
-        magnitude > 14.5 &&
-        now - lastStepTime > 350
-    ){
-
-        lastStepTime = now;
-
-        addStep();
-
-    }
+    return R * c;
 
 }
-/* 開始 */
 
-async function start(){
+/* GPS取得 */
 
-    if(running){
+function onLocation(position){
 
-        running = false;
+    const lat =
+    position.coords.latitude;
 
-        statusEl.textContent =
-        "停止中";
+    const lon =
+    position.coords.longitude;
 
-        startBtn.textContent =
-        "START";
+    const accuracy =
+    position.coords.accuracy;
+
+    /*
+      精度悪すぎる時は無視
+    */
+
+    if(accuracy > 40){
 
         return;
+
     }
 
-    if(
-        typeof DeviceMotionEvent
-        !== "undefined"
-        &&
-        typeof DeviceMotionEvent
-        .requestPermission
-        === "function"
-    ){
+    if(lastPosition){
 
-        const permission =
-        await DeviceMotionEvent
-        .requestPermission();
+        const distance =
+        calculateDistance(
+            lastPosition.lat,
+            lastPosition.lon,
+            lat,
+            lon
+        );
 
-        if(permission !== "granted"){
+        /*
+          GPS暴走対策
+        */
 
-            alert("許可が必要です");
+        if(
+            distance > 0.003
+            &&
+            distance < 0.3
+        ){
 
-            return;
+            totalDistance += distance;
+
+            updateUI();
+
+            saveData();
+
         }
 
     }
 
-    running = true;
+    lastPosition = {
+        lat,
+        lon
+    };
+
+}
+
+/* GPSエラー */
+
+function onError(error){
+
+    console.log(error);
 
     statusEl.textContent =
-    "計測中...";
+    "GPSエラー";
+
+}
+
+/* 開始 */
+
+function startTracking(){
+
+    if(tracking){
+
+        tracking = false;
+
+        startBtn.textContent =
+        "START";
+
+        statusEl.textContent =
+        "停止中";
+
+        navigator.geolocation
+        .clearWatch(watchId);
+
+        watchId = null;
+
+        return;
+
+    }
+
+    if(
+        !navigator.geolocation
+    ){
+
+        alert(
+            "GPS非対応です"
+        );
+
+        return;
+
+    }
+
+    tracking = true;
 
     startBtn.textContent =
     "STOP";
+
+    statusEl.textContent =
+    "GPS計測中...";
+
+    watchId =
+    navigator.geolocation.watchPosition(
+
+        onLocation,
+
+        onError,
+
+        {
+
+            enableHighAccuracy:true,
+
+            maximumAge:0,
+
+            timeout:10000
+
+        }
+
+    );
 
 }
 
@@ -638,7 +692,9 @@ async function start(){
 
 function reset(){
 
-    steps = 0;
+    totalDistance = 0;
+
+    lastPosition = null;
 
     updateUI();
 
@@ -648,21 +704,20 @@ function reset(){
 
 /* 起動時 */
 
-steps =
+totalDistance =
 Number(
-localStorage.getItem("todaySteps")
+localStorage.getItem(
+    "totalDistance"
+)
 ) || 0;
 
 updateUI();
 
-window.addEventListener(
-    "devicemotion",
-    motion
-);
+/* ボタン */
 
 startBtn.addEventListener(
     "click",
-    start
+    startTracking
 );
 
 document
@@ -672,24 +727,22 @@ document
     reset
 );
 
-    document
+/* 戻る */
+
+document
 .getElementById("backBtn")
 .addEventListener(
 "click",
 ()=>{
 
     const transition =
-document.getElementById(
-    "transition"
-);
-
-if(transition){
+    document.getElementById(
+        "transition"
+    );
 
     transition.classList.add(
         "active"
     );
-
-        }
 
     setTimeout(()=>{
 
@@ -699,6 +752,7 @@ if(transition){
     },500);
 
 });
+
 </script>
     <div class="pageTransition" id="transition"></div>
 </body>
