@@ -481,7 +481,30 @@ width:100%;
     }
 
 }
+/*ページ移行アニメーション*/
+    .pageTransition{
 
+    position:fixed;
+    inset:0;
+
+    z-index:9999;
+
+    pointer-events:none;
+
+    background:
+    radial-gradient(circle at top,#7d2cff 0%,transparent 40%),
+    radial-gradient(circle at bottom,#009dff 0%,transparent 45%),
+    linear-gradient(180deg,#5518d9,#006eff);
+
+    opacity:0;
+
+    transition:opacity 0.5s ease;
+}
+
+.pageTransition.active{
+
+    opacity:1;
+}
 </style>
 </head>
 
@@ -774,5 +797,6 @@ if("serviceWorker" in navigator){
 }
 
     </script>
+    <div class="pageTransition" id="transition"></div>
 </body>
 </html>
