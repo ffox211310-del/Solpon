@@ -380,7 +380,7 @@ body{
     <div class="title">
 
         <div class="titleSmall">
-            今日の移動
+            今日の歩数
         </div>
 
         <div class="stepCount" id="stepCount">
@@ -796,6 +796,37 @@ document
     reset
 );
 
+    document
+.getElementById("backBtn")
+.addEventListener(
+"click",
+()=>{
+
+    const transition =
+    document.getElementById(
+        "transition"
+    );
+
+    /*
+      表示
+    */
+
+    transition.classList.add(
+        "active"
+    );
+
+    /*
+      少し待つ
+    */
+
+    setTimeout(()=>{
+
+        window.location.href =
+        "index.html?skipSplash=true";
+
+    },550);
+
+});
 </script>
     <div class="pageTransition" id="transition"></div>
 </body>
