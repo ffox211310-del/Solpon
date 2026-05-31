@@ -336,6 +336,48 @@ body{
 
     opacity:1;
 }
+    .infoBox{
+
+    margin-top:22px;
+
+    padding:18px;
+
+    border-radius:24px;
+
+    background:
+    rgba(255,255,255,0.08);
+
+    border:
+    1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter:blur(20px);
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.18);
+}
+
+.infoTitle{
+
+    font-size:14px;
+
+    font-weight:900;
+
+    letter-spacing:1px;
+
+    margin-bottom:12px;
+
+    opacity:0.9;
+}
+
+.infoText{
+
+    font-size:13px;
+
+    line-height:1.9;
+
+    color:
+    rgba(255,255,255,0.72);
+}
 /*歩数は確実ではない*/
 .notice{
 
@@ -427,6 +469,26 @@ body{
     <div class="controls">
 <div class="notice">
     ※歩数データは参考値です
+</div>
+<div class="infoBox">
+
+    <div class="infoTitle">
+        INFORMATION
+    </div>
+
+    <div class="infoText">
+
+        ・START時に位置情報の許可が必要です<br>
+
+        ・Androidでは、
+        バッテリー最適化をOFFにすると
+        計測が安定する場合があります<br>
+
+        ・移動後に再度STARTを押すことで、
+        距離が加算される場合があります
+
+    </div>
+
 </div>
         <button class="btn startBtn" id="startBtn">
             START
