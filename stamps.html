@@ -305,6 +305,30 @@ body{
 
 </div>
 <div class="pageTransition" id="transition"></div>
-    
+    <script>
+        document
+.getElementById("backBtn")
+.addEventListener(
+"click",
+()=>{
+
+    const transition =
+    document.getElementById(
+        "transition"
+    );
+
+    transition.classList.add(
+        "active"
+    );
+
+    setTimeout(()=>{
+
+        window.location.href =
+        "index.html?skipSplash=true";
+
+    },500);
+
+});
+    </script>       
 </body>
 </html>
