@@ -173,6 +173,7 @@ body{
     opacity:0.9;
 }
 
+    
 /* ガラスカード */
 
 .stats{
@@ -349,6 +350,19 @@ body{
 
     line-height:1.6;
 }
+
+    .gpsInfo{
+
+    margin-top:18px;
+
+    text-align:center;
+
+    font-size:14px;
+
+    color:rgba(255,255,255,0.7);
+
+    line-height:1.6;
+    }
 </style>
 </head>
 
@@ -379,6 +393,9 @@ body{
 
     </div>
 
+    <div class="gpsInfo" id="gpsInfo">
+    GPS待機中...
+    </div>
     <div class="stats">
 
         <div class="card">
@@ -433,15 +450,23 @@ body{
 
 <script>
 
-let tracking = false;
+/* =========================
+   状態
+========================= */
+
+let running = false;
+
+let watchId = null;
 
 let totalDistance = 0;
 
 let lastPosition = null;
 
-let watchId = null;
+let pathPoints = [];
 
-/* 要素 */
+/* =========================
+   要素
+========================= */
 
 const stepEl =
 document.getElementById("stepCount");
@@ -455,71 +480,37 @@ document.getElementById("calories");
 const statusEl =
 document.getElementById("status");
 
+const gpsInfoEl =
+document.getElementById("gpsInfo");
+
 const startBtn =
 document.getElementById("startBtn");
 
-/* 保存 */
+/* =========================
+   保存
+========================= */
 
 function saveData(){
 
     localStorage.setItem(
-        "totalDistance",
+        "solponDistance",
         totalDistance
     );
 
-}
-
-/* UI更新 */
-
-function updateUI(){
-
-    /*
-      距離(km)
-    */
-
-    distanceEl.textContent =
-    totalDistance.toFixed(2)
-    + "km";
-
-    /*
-      歩数推定
-      1歩 = 0.7m
-    */
-
-    const estimatedSteps =
-    Math.round(
-        (totalDistance * 1000)
-        / 0.7
+    localStorage.setItem(
+        "solponPath",
+        JSON.stringify(pathPoints)
     );
-
-    stepEl.textContent =
-    estimatedSteps;
-
-    /*
-      消費カロリー
-      超ざっくり
-    */
-
-    const calories =
-    Math.round(
-        totalDistance * 55
-    );
-
-    caloriesEl.textContent =
-    calories + "kcal";
 
 }
 
-/* 距離計算 */
+/* =========================
+   距離計算
+========================= */
 
-function calculateDistance(
-    lat1,
-    lon1,
-    lat2,
-    lon2
-){
+function getDistance(lat1, lon1, lat2, lon2){
 
-    const R = 6371;
+    const R = 6371000;
 
     const dLat =
     (lat2 - lat1)
@@ -530,30 +521,71 @@ function calculateDistance(
     * Math.PI / 180;
 
     const a =
-    Math.sin(dLat / 2)
+    Math.sin(dLat/2)
     *
-    Math.sin(dLat / 2)
+    Math.sin(dLat/2)
     +
-    Math.cos(lat1 * Math.PI / 180)
+    Math.cos(lat1 * Math.PI/180)
     *
-    Math.cos(lat2 * Math.PI / 180)
+    Math.cos(lat2 * Math.PI/180)
     *
-    Math.sin(dLon / 2)
+    Math.sin(dLon/2)
     *
-    Math.sin(dLon / 2);
+    Math.sin(dLon/2);
 
     const c =
-    2 *
-    Math.atan2(
+    2 * Math.atan2(
         Math.sqrt(a),
-        Math.sqrt(1 - a)
+        Math.sqrt(1-a)
     );
 
     return R * c;
 
 }
 
-/* GPS取得 */
+/* =========================
+   UI更新
+========================= */
+
+function updateUI(){
+
+    const km =
+    (totalDistance / 1000)
+    .toFixed(2);
+
+    distanceEl.textContent =
+    km + "km";
+
+    /*
+      推定歩数
+      0.7m歩幅
+    */
+
+    const estimatedSteps =
+    Math.round(
+        totalDistance / 0.7
+    );
+
+    stepEl.textContent =
+    estimatedSteps;
+
+    /*
+      超ざっくり
+    */
+
+    const calories =
+    Math.round(
+        estimatedSteps * 0.04
+    );
+
+    caloriesEl.textContent =
+    calories + "kcal";
+
+}
+
+/* =========================
+   GPS取得
+========================= */
 
 function onLocation(position){
 
@@ -566,20 +598,29 @@ function onLocation(position){
     const accuracy =
     position.coords.accuracy;
 
+    gpsInfoEl.textContent =
+    "GPS精度 ±"
+    +
+    Math.round(accuracy)
+    +
+    "m";
+
+    const point = {
+        lat,
+        lon,
+        time:Date.now()
+    };
+
+    pathPoints.push(point);
+
     /*
-      精度悪すぎる時は無視
+      前回地点あり
     */
-
-    if(accuracy > 40){
-
-        return;
-
-    }
 
     if(lastPosition){
 
-        const distance =
-        calculateDistance(
+        const dist =
+        getDistance(
             lastPosition.lat,
             lastPosition.lon,
             lat,
@@ -587,20 +628,15 @@ function onLocation(position){
         );
 
         /*
-          GPS暴走対策
+          GPS飛び対策
         */
 
         if(
-            distance > 0.003
-            &&
-            distance < 0.3
+            dist > 1 &&
+            dist < 80
         ){
 
-            totalDistance += distance;
-
-            updateUI();
-
-            saveData();
+            totalDistance += dist;
 
         }
 
@@ -611,26 +647,34 @@ function onLocation(position){
         lon
     };
 
-}
+    updateUI();
 
-/* GPSエラー */
-
-function onError(error){
-
-    console.log(error);
-
-    statusEl.textContent =
-    "GPSエラー";
+    saveData();
 
 }
 
-/* 開始 */
+/* =========================
+   GPSエラー
+========================= */
+
+function onError(err){
+
+    gpsInfoEl.textContent =
+    "GPS取得失敗";
+
+    console.log(err);
+
+}
+
+/* =========================
+   開始
+========================= */
 
 function startTracking(){
 
-    if(tracking){
+    if(running){
 
-        tracking = false;
+        running = false;
 
         startBtn.textContent =
         "START";
@@ -638,34 +682,26 @@ function startTracking(){
         statusEl.textContent =
         "停止中";
 
+        gpsInfoEl.textContent =
+        "GPS停止";
+
         navigator.geolocation
         .clearWatch(watchId);
 
-        watchId = null;
-
         return;
 
     }
 
-    if(
-        !navigator.geolocation
-    ){
-
-        alert(
-            "GPS非対応です"
-        );
-
-        return;
-
-    }
-
-    tracking = true;
+    running = true;
 
     startBtn.textContent =
     "STOP";
 
     statusEl.textContent =
-    "GPS計測中...";
+    "計測中...";
+
+    gpsInfoEl.textContent =
+    "GPS接続中...";
 
     watchId =
     navigator.geolocation.watchPosition(
@@ -675,20 +711,18 @@ function startTracking(){
         onError,
 
         {
-
             enableHighAccuracy:true,
-
             maximumAge:0,
-
             timeout:10000
-
         }
 
     );
 
 }
 
-/* リセット */
+/* =========================
+   リセット
+========================= */
 
 function reset(){
 
@@ -696,24 +730,59 @@ function reset(){
 
     lastPosition = null;
 
+    pathPoints = [];
+
     updateUI();
 
     saveData();
 
 }
 
-/* 起動時 */
+/* =========================
+   復帰検知
+========================= */
+
+document.addEventListener(
+    "visibilitychange",
+    ()=>{
+
+    if(
+        document.visibilityState
+        === "visible"
+        &&
+        running
+    ){
+
+        gpsInfoEl.textContent =
+        "GPS再接続中...";
+
+    }
+
+});
+
+/* =========================
+   起動時
+========================= */
 
 totalDistance =
 Number(
 localStorage.getItem(
-    "totalDistance"
+"solponDistance"
 )
 ) || 0;
 
+pathPoints =
+JSON.parse(
+localStorage.getItem(
+"solponPath"
+)
+) || [];
+
 updateUI();
 
-/* ボタン */
+/* =========================
+   ボタン
+========================= */
 
 startBtn.addEventListener(
     "click",
@@ -726,32 +795,6 @@ document
     "click",
     reset
 );
-
-/* 戻る */
-
-document
-.getElementById("backBtn")
-.addEventListener(
-"click",
-()=>{
-
-    const transition =
-    document.getElementById(
-        "transition"
-    );
-
-    transition.classList.add(
-        "active"
-    );
-
-    setTimeout(()=>{
-
-        window.location.href =
-        "index.html?skipSplash=true";
-
-    },500);
-
-});
 
 </script>
     <div class="pageTransition" id="transition"></div>
