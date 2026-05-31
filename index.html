@@ -482,6 +482,111 @@ width:100%;
 
 }
 
+    /* =========================
+   メニュー
+========================= */
+
+.menuButton{
+
+    position:fixed;
+
+    top:20px;
+    right:20px;
+
+    z-index:1000;
+
+    width:52px;
+    height:52px;
+
+    border-radius:18px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:28px;
+
+    color:white;
+
+    background:
+    rgba(255,255,255,0.12);
+
+    backdrop-filter:blur(20px);
+
+    border:
+    1px solid rgba(255,255,255,0.1);
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.25);
+
+    cursor:pointer;
+
+    user-select:none;
+}
+
+.menuPanel{
+
+    position:fixed;
+
+    top:85px;
+    right:20px;
+
+    z-index:999;
+
+    width:220px;
+
+    padding:15px;
+
+    border-radius:28px;
+
+    background:
+    rgba(255,255,255,0.12);
+
+    backdrop-filter:blur(25px);
+
+    border:
+    1px solid rgba(255,255,255,0.1);
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,0.3);
+
+    display:none;
+
+    flex-direction:column;
+
+    gap:12px;
+}
+
+.menuPanel.active{
+
+    display:flex;
+}
+
+.menuItem{
+
+    text-decoration:none;
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    padding:14px 18px;
+
+    border-radius:18px;
+
+    background:
+    rgba(255,255,255,0.08);
+
+    transition:0.2s;
+}
+
+.menuItem:hover{
+
+    background:
+    rgba(255,255,255,0.18);
+}
 </style>
 </head>
 
@@ -493,7 +598,23 @@ width:100%;
     <div class="glow glow2"></div>
 
 </div>
+<!-- メニュー -->
 
+<div class="menuButton" id="menuButton">
+    ☰
+</div>
+
+<div class="menuPanel" id="menuPanel">
+
+    <a href="stamps.html" class="menuItem">
+        スタンプ
+    </a>
+
+    <a href="settings.html" class="menuItem">
+        設定
+    </a>
+
+</div>
 <!-- 起動 -->
 
 <div class="splash">
@@ -785,6 +906,27 @@ if("serviceWorker" in navigator){
 
 }
 
+        /* メニュー */
+
+const menuButton =
+document.getElementById(
+    "menuButton"
+);
+
+const menuPanel =
+document.getElementById(
+    "menuPanel"
+);
+
+menuButton.addEventListener(
+"click",
+()=>{
+
+    menuPanel.classList.toggle(
+        "active"
+    );
+
+});
     </script>
 </body>
 </html>
