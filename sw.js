@@ -1,4 +1,4 @@
-const CACHE_NAME = "solpon-v4";
+const CACHE_NAME = "solpon-v5";
 
 const urlsToCache = [
   "./",
