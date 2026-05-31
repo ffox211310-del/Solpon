@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0"/>
+
+<title>Stamps</title>
+
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap"
+rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:
+    'Noto Sans JP',
+    sans-serif;
+
+    min-height:100vh;
+
+    overflow-x:hidden;
+
+    color:white;
+
+    background:
+    radial-gradient(circle at top,
+    #7d2cff 0%,
+    transparent 40%),
+
+    radial-gradient(circle at bottom,
+    #ff00aa 0%,
+    transparent 45%),
+
+    linear-gradient(
+    180deg,
+    #5518d9,
+    #ff00aa);
+}
+
+/* 全体 */
+
+.container{
+
+    padding:25px;
+}
+
+/* 戻る */
+
+.back{
+
+    color:white;
+
+    text-decoration:none;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    opacity:0.9;
+}
+
+/* タイトル */
+
+.title{
+
+    text-align:center;
+
+    font-size:64px;
+
+    font-weight:900;
+
+    margin-top:10px;
+
+    margin-bottom:30px;
+}
+
+/* カード */
+
+.stampCard{
+
+    background:
+    rgba(255,255,255,0.12);
+
+    border:
+    1px solid rgba(255,255,255,0.1);
+
+    backdrop-filter:blur(25px);
+
+    border-radius:40px;
+
+    padding:25px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,0.25);
+}
+
+/* 日付 */
+
+.date{
+
+    font-size:24px;
+
+    font-weight:900;
+
+    margin-bottom:25px;
+}
+
+/* グリッド */
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(3,1fr);
+
+    gap:22px;
+}
+
+/* スタンプ */
+
+.stamp{
+
+    aspect-ratio:1;
+
+    border-radius:50%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:42px;
+
+    background:
+    rgba(255,255,255,0.12);
+
+    border:
+    1px solid rgba(255,255,255,0.1);
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,0.25);
+}
+
+/* 名前 */
+
+.stampName{
+
+    text-align:center;
+
+    margin-top:12px;
+
+    font-size:14px;
+
+    font-weight:700;
+}
+
+/* ページ */
+
+.page{
+
+    text-align:center;
+
+    margin-top:35px;
+
+    font-size:30px;
+
+    font-weight:900;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a
+    href="index.html?skipSplash=true"
+    class="back"
+    >
+        ←ホームに戻る
+    </a>
+
+    <div class="title">
+        スタンプカード
+    </div>
+
+    <div class="stampCard">
+
+        <div class="date">
+            2026/05/31
+        </div>
+
+        <div class="grid">
+
+            <div>
+
+                <div class="stamp">
+                    🚴
+                </div>
+
+                <div class="stampName">
+                    初ライド
+                </div>
+
+            </div>
+
+            <div>
+
+                <div class="stamp">
+                    🌙
+                </div>
+
+                <div class="stampName">
+                    深夜移動
+                </div>
+
+            </div>
+
+            <div>
+
+                <div class="stamp">
+                    🔥
+                </div>
+
+                <div class="stampName">
+                    7日継続
+                </div>
+
+            </div>
+
+            <div>
+
+                <div class="stamp">
+                    ☔
+                </div>
+
+                <div class="stampName">
+                    雨の日
+                </div>
+
+            </div>
+
+            <div>
+
+                <div class="stamp">
+                    👟
+                </div>
+
+                <div class="stampName">
+                    10000歩
+                </div>
+
+            </div>
+
+            <div>
+
+                <div class="stamp">
+                    🍜
+                </div>
+
+                <div class="stampName">
+                    深夜ラーメン
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="page">
+            2ページ目 →
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
