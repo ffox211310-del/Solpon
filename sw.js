@@ -1,12 +1,13 @@
-const CACHE_NAME = "solpon-v15";
+const CACHE_NAME = "solpon-v16";
 
 const urlsToCache = [
   "./",
   "./index.html",
   "./pedometer.html",
-  "./stamps.html",
-  "./stampWelcome.png"
+  "./stamps.html"
 ];
+
+/* インストール */
 
 self.addEventListener("install", e => {
 
@@ -22,6 +23,8 @@ self.addEventListener("install", e => {
   );
 
 });
+
+/* 有効化 */
 
 self.addEventListener("activate", e => {
 
@@ -51,14 +54,56 @@ self.addEventListener("activate", e => {
 
 });
 
+/* 通信 */
+
 self.addEventListener("fetch", e => {
 
   e.respondWith(
 
     caches.match(e.request)
-    .then(response => {
+    .then(cached => {
 
-      return response || fetch(e.request);
+      /* あった */
+
+      if(cached){
+
+        return cached;
+
+      }
+
+      /* なかった */
+
+      return fetch(e.request)
+      .then(response => {
+
+        /*
+          画像なら自動保存
+        */
+
+        if(
+          e.request.url.match(
+            /\.(png|jpg|jpeg|webp|gif)$/i
+          )
+        ){
+
+          const responseClone =
+          response.clone();
+
+          caches.open(CACHE_NAME)
+          .then(cache => {
+
+            cache.put(
+              e.request,
+              responseClone
+            );
+
+          });
+
+        }
+
+        return response;
+
+      });
 
     })
 
