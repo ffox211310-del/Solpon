@@ -3,7 +3,9 @@ const CACHE_NAME = "solpon-v14";
 const urlsToCache = [
   "./",
   "./index.html",
-  "./pedometer.html"
+  "./pedometer.html",
+  "./stamps.html",
+  "./stampWelcome.png"
 ];
 
 self.addEventListener("install", e => {
@@ -14,11 +16,7 @@ self.addEventListener("install", e => {
 
     caches.open(CACHE_NAME)
     .then(cache => {
-
-      return cache.addAll(
-        urlsToCache
-      );
-
+      return cache.addAll(urlsToCache);
     })
 
   );
@@ -60,8 +58,7 @@ self.addEventListener("fetch", e => {
     caches.match(e.request)
     .then(response => {
 
-      return response ||
-      fetch(e.request);
+      return response || fetch(e.request);
 
     })
 
