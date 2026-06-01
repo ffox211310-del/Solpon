@@ -1,10 +1,12 @@
-const CACHE_NAME = "solpon-v16";
+const CACHE_NAME = "solpon-v17";
 
 const urlsToCache = [
   "./",
   "./index.html",
   "./pedometer.html",
-  "./stamps.html"
+  "./stamps.html",
+  "./stampWelcome.png",
+  "./silent.mp3"
 ];
 
 /* インストール */
@@ -60,50 +62,28 @@ self.addEventListener("fetch", e => {
 
   e.respondWith(
 
-    caches.match(e.request)
-    .then(cached => {
+    fetch(e.request)
+    .then(response => {
 
-      /* あった */
+      const responseClone =
+      response.clone();
 
-      if(cached){
+      caches.open(CACHE_NAME)
+      .then(cache => {
 
-        return cached;
-
-      }
-
-      /* なかった */
-
-      return fetch(e.request)
-      .then(response => {
-
-        /*
-          画像なら自動保存
-        */
-
-        if(
-          e.request.url.match(
-            /\.(png|jpg|jpeg|webp|gif)$/i
-          )
-        ){
-
-          const responseClone =
-          response.clone();
-
-          caches.open(CACHE_NAME)
-          .then(cache => {
-
-            cache.put(
-              e.request,
-              responseClone
-            );
-
-          });
-
-        }
-
-        return response;
+        cache.put(
+          e.request,
+          responseClone
+        );
 
       });
+
+      return response;
+
+    })
+    .catch(() => {
+
+      return caches.match(e.request);
 
     })
 
